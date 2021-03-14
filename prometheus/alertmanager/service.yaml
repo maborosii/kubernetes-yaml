@@ -1,0 +1,12 @@
+# Prometheus调用alert采用service name。不走ingress域名
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager
+  namespace: kube-monitor
+spec:
+  selector: 
+    app: alertmanager
+  ports:
+    - port: 80
+      targetPort: 9093

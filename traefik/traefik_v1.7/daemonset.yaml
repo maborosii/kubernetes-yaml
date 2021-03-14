@@ -14,6 +14,10 @@ spec:
       labels:
         k8s-app: traefik-ingress
         name: traefik-ingress
+      annotations:
+        prometheus_io_scheme: traefik
+        prometheus_io_path: /metrics
+        prometheus_io_port: "8080"
     spec:
       serviceAccountName: traefik-ingress-controller
       terminationGracePeriodSeconds: 60

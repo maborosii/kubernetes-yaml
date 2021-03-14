@@ -1,0 +1,32 @@
+
+
+
+kubectl config set-cluster myk8s \
+--certificate-authority=/opt/apps/kubernetes/server/bin/certs/ca.pem \
+--embed-certs=true \
+--server=https://10.4.7.10:7443 \
+--kubeconfig=/opt/apps/kubernetes/conf/kube-root.kubeconfig
+
+
+
+
+
+kubectl config set-credentials k8s-root \
+--client-certificate=/opt/apps/kubernetes/server/bin/certs/root.pem \
+--client-key=/opt/apps/kubernetes/server/bin/certs/root-key.pem \
+--embed-certs=true \
+--kubeconfig=/opt/apps/kubernetes/conf/kube-root.kubeconfig
+
+
+
+
+• set-context  # 设置context，即确定账号和集群对应关系
+kubectl config set-context myk8s-context \
+--cluster=myk8s \
+--user=k8s-root \
+--kubeconfig=/opt/apps/kubernetes/conf/kube-root.kubeconfig
+
+
+
+
+kubectl config use-context myk8s-context --kubeconfig=/opt/apps/kubernetes/conf/kube-root.kubeconfig

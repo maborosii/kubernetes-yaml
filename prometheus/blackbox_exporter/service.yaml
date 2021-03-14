@@ -1,0 +1,13 @@
+# 没有指定targetPort是因为Pod中暴露端口名称为 blackbox-port
+apiVersion: v1
+kind: Service
+metadata:
+  name: blackbox-exporter
+  namespace: kube-monitor
+spec:
+  selector:
+    app: blackbox-exporter
+  ports:
+    - name: blackbox-port
+      protocol: TCP
+      port: 9115

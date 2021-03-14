@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+  labels:
+    grafanak8sapp: "true"
+    app: kube-state-metrics
+  name: kube-state-metrics
+  namespace: kube-monitor
+spec:
+  selector:
+    matchLabels:
+      grafanak8sapp: "true"
+      app: kube-state-metrics
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        grafanak8sapp: "true"
+        app: kube-state-metrics
+    spec:
+      containers:
+      - name: kube-state-metrics
+        image: harbor.od.com/public/kube-state-metrics:v1.9.8
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http-metrics
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+      serviceAccountName: kube-state-metrics

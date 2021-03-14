@@ -1,19 +1,19 @@
-apiVersion: networking.k8s.io/v1 
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: traefik-web-ui
-  namespace: kube-system
   annotations:
     kubernetes.io/ingress.class: traefik
+  name: prometheus
+  namespace: kube-monitor
 spec:
   rules:
-  - host: traefik.od.com
+  - host: prometheus.od.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: traefik-ingress-service
+            name: prometheus
             port:
-              number: 8080
+              number: 9090

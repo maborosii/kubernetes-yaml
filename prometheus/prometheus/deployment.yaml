@@ -1,0 +1,54 @@
+# Prometheus在生产环境中，一般采用一个单独的大内存node部署，采用污点让其它pod不会调度上来
+# --storage.tsdb.min-block-duration 内存中缓存最新多少分钟的TSDB数据，生产中会缓存更多的数据
+# --storage.tsdb.retention TSDB数据保留的时间，生产中会保留更多的数据
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "5"
+  labels:
+    name: prometheus
+  name: prometheus
+  namespace: kube-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      nodeName: k8s-22.host.com
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: prometheus
+        image: harbor.od.com/public/prometheus:v2.25.0
+        command:
+        - /bin/prometheus
+        args:
+        - --config.file=/data/etc/prometheus.yaml
+        - --storage.tsdb.path=/data/prom-db
+        - --storage.tsdb.min-block-duration=10m
+        - --storage.tsdb.retention=72h
+        ports:
+        - containerPort: 9090
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "1.5Gi"
+          limits:
+            cpu: "2000m"
+            memory: "3Gi"
+      serviceAccountName: prometheus
+      volumes:
+      - name: data
+        nfs:
+          server: k8s-200.host.com
+          path: /nfs_data/prometheus
